@@ -1,0 +1,21 @@
+var app = angular.module("AngTable", []);  
+app.controller('Table', ['$scope', '$filter', function ($scope, $filter) { 
+$scope.currentPage = 0; 
+$scope.pageSize = 10; 
+$scope.q = ''; 
+$scope.SampleRecords=[ 
+{"Hostname":"Apacheserver","Username":"tunnelix","Login":"Fri-Sep-28-15:11","TimeTaken":"15:11(00:00)","IPAddress":"192.168.0.1","Application":"Apache","Perimeter":"Production"},
+ ]; 
+$scope.getData = function () { 
+return $filter('filter')($scope.SampleRecords, $scope.q) 
+ }; 
+$scope.numberOfPages=function(){ 
+return Math.ceil($scope.getData().length/$scope.pageSize); 
+}; 
+}]); 
+app.filter('startFrom', function() { 
+    return function(input, start) { 
+start = +start; 
+return input.slice(start); 
+ } 
+}); 
