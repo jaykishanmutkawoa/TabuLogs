@@ -25,7 +25,7 @@
    gather_facts: no
    tasks:
    - name: Inserting date in HTML file
-     shell: dt=`date` ; sed -i "72s/.*/$dt/" /Nitin/AnsibleAuditWorkDesk/user-management/index.html
+     shell: dt=`date` ; sed -i "72s/.*/$dt/" /Tabulogs/perimeter1/index.html
 
  - hosts: test
    gather_facts: yes
@@ -34,6 +34,31 @@
    tasks:
 
 # I know this is crazy to do with last. I was using an old utils-linux. Consider using better arguments with last if you are using update utils-linux such as --since
+# This can be launched any month and it will fetch the log from last month.
      - name: Creating raw info
-       shell: Date=`date +%b`; t=`hostname -s` && last | grep $Date | awk -v t="$t" '{print t, $1, $4 "-" $5 "-" $6 "-" $7, $9$10, $3 }' | egrep -v 'wtmp|reboot' > /tmp/$t
+       shell: Date=`date +%b -d 'last month'`; t=`hostname -s` && last | grep $Date | awk -v t="$t" '{print t, $1, $4 "-" $5 "-" $6 "-" $7, $9$10, $3 }' | egrep -v 'wtmp|reboot' > /tmp/$t
 
+     - name: Copy from source to destination.
+       fetch: src=/tmp/{{ ansible_hostname }} dest=/Tabulogs/AnsibleWorkDesk flat=yes
+
+     - name: Destroying rememote files
+       shell: rm -f /tmp/{{ ansible_hostname }}
+
+########### LOCAL TASKS
+
+ - name: Working locally
+   hosts: 127.0.0.1
+   connection: local
+   gather_facts: no
+   tasks:
+
+   - name: Merging all the data
+     shell: awk 'NF' /Tabulogs/AnsibleWorkDesk/* | sed '/^\s*$/d' > /Tabulogs/AnsibleWorkDesk/AllInOne
+
+   - name: Adding more data about Perimeter and Application.
+     shell: awk 'FNR == NR {a[$3] = $1 " " $2; next} { if ($1 in a) { NF++; $NF = a[$1] }; print}' /Tabulogs/AnsibleWorkDesk/rhel7_application_perimeter /Tabulogs/AnsibleWorkDesk/AllInOne > /Tabulogs/AnsibleWorkDesk/AllInOneWithPerimeterAndApplication
+
+   - name: Creating JSON files to be embed in javaScript (AngularJS )
+     shell: awk '{print "{" "\"" "Hostname" "\"" ":" "\""  $1"\"" "," "\"" "Username" "\"" ":"  "\"" $2"\"" "," "\"" "Login" "\"" ":" "\"" $3"\"" "," "\"" "TimeTaken" "\"" ":"  "\"" $4"\"" ",""\"" "IPAddress" "\"" ":"  "\"" $5"\"" "," "\"" "Application" "\"" ":"  "\"" $6"\"" "," "\"" "Perimeter" "\"" ":"  "\""$7"\"""}" "," }' /Tabulogs/AnsibleWorkDesk/AllInOneWithPerimeterAndApplication  > /Tabulogs/AnsibleWorkDesk/JSReady
+
+   
