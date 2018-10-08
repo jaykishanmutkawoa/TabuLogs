@@ -65,6 +65,8 @@
    - name: Creating JSON files to be embed in javaScript (AngularJS )
      shell: awk '{print "{" "\"" "Hostname" "\"" ":" "\""  $1"\"" "," "\"" "Username" "\"" ":"  "\"" $2"\"" "," "\"" "Login" "\"" ":" "\"" $3"\"" "," "\"" "TimeTaken" "\"" ":"  "\"" $4"\"" ",""\"" "IPAddress" "\"" ":"  "\"" $5"\"" "," "\"" "Application" "\"" ":"  "\"" $6"\"" "," "\"" "Perimeter" "\"" ":"  "\""$7"\"""}" "," }' /Tabulogs/AnsibleWorkDesk/AllInOneWithPerimeterAndApplication  > /Tabulogs/AnsibleWorkDesk/perimeter1/table.js
 
+# Here we create the Javascript file from the JSON array
+
    - name: Bullet proof approach by putting the JS into form - writing at the beginning of the file
      lineinfile: dest=/Tabulogs/AnsibleWorkDesk/perimeter1/table.js line={{ item.javascript }} insertbefore=BOF
      with_items:

@@ -1,0 +1,5 @@
+# Format of which your rhel7_application_perimeter file should be for the playbook to work.
+
+#apache	prod	server1
+#nginx	dev	server2
+#sql	prod	server3
